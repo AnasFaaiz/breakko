@@ -38,17 +38,14 @@ export default function HomePage() {
     if (theme === "system") {
       setTheme("dark")
     }
-    // Track page view
     trackAnalytics("page_view")
   }, [theme, setTheme, trackAnalytics])
 
   const handleStatusSelect = async (status: string) => {
     setIsTransitioning(true)
 
-    // Track analytics
     await trackAnalytics("status_set")
 
-    // Save status if user is logged in
     if (user) {
       await saveStatus(status, !presetStatuses.includes(status))
     }
@@ -59,7 +56,6 @@ export default function HomePage() {
       setShowSidebar(false)
       setIsTransitioning(false)
 
-      // Start hide timer for controls after status selection
       if (hideTimeout) clearTimeout(hideTimeout)
       const timeout = setTimeout(() => {
         setShowControls(false)
@@ -142,7 +138,7 @@ export default function HomePage() {
     }
   }
 
-  // Check if user is premium (no ads)
+  // Check if user is premium (no ads) 
   const isPremium = user?.is_premium && user?.premium_expires_at && new Date(user.premium_expires_at) > new Date()
 
   if (!mounted) return null
@@ -153,7 +149,7 @@ export default function HomePage() {
       onMouseMove={handleMouseMove}
       style={{
         transition: "background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
-        paddingBottom: !isPremium ? "60px" : "0", // Add padding for ad banner
+        paddingBottom: !isPremium ? "60px" : "0", 
       }}
     >
       {/* Sidebar */}
@@ -213,8 +209,11 @@ export default function HomePage() {
                   transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                 }}
               >
-                {isFullscreen ? (
+              {isFullscreen ? (
+		<>
+		{/*Simple. Clean. Effective. */}
                   <Minimize2 className="h-5 w-5 transition-transform duration-300" />
+		</>
                 ) : (
                   <Maximize2 className="h-5 w-5 transition-transform duration-300" />
                 )}
@@ -263,7 +262,7 @@ export default function HomePage() {
                 <button
                   key={index}
                   onClick={() => handleStatusSelect(status)}
-                  className="block w-full text-xl font-medium font-sans py-4 px-6 text-center hover:text-primary hover:scale-105 transition-all duration-400 ease-out cursor-pointer border-none bg-transparent hover:bg-accent/10 rounded-lg"
+                  className="relative block w-full text-xl font-medium font-sans py-4 px-6 text-center hover:text-primary hover:scale-105 transition-all duration-400 ease-out cursor-pointer border-none bg-transparent after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-primary after:origin-center after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-400 after:ease-out"
                   style={{
                     transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
                     animationDelay: `${index * 0.1}s`,

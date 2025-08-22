@@ -32,14 +32,14 @@ export function AdBanner({ onUpgrade }: AdBannerProps) {
           >
             Remove Ads - $2/month
           </Button>
-          <Button
+	  {/*<Button
             variant="ghost"
             size="icon"
             onClick={() => setIsVisible(false)}
             className="h-6 w-6 hover:bg-accent hover:text-accent-foreground"
           >
             <X className="h-3 w-3" />
-          </Button>
+          </Button> */}
         </div>
       </div>
     </div>
