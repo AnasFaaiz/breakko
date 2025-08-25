@@ -5,7 +5,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Menu, Sun, Moon, Maximize2, Minimize2 } from "lucide-react"
+import { Menu, Sun, Moon, Maximize2, Minimize2, Coffee } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Sidebar } from "@/components/sidebar"
 import { AdBanner } from "@/components/ad-banner"
@@ -138,8 +138,11 @@ export default function HomePage() {
     }
   }
 
-  // Check if user is premium (no ads) 
-  const isPremium = user?.is_premium && user?.premium_expires_at && new Date(user.premium_expires_at) > new Date()
+  // Check if user is premium (no ads)
+  const isPremium =
+    user?.is_premium &&
+    user?.premium_expires_at &&
+    new Date(user.premium_expires_at) > new Date()
 
   if (!mounted) return null
 
@@ -148,8 +151,9 @@ export default function HomePage() {
       className="min-h-screen bg-background text-foreground transition-all duration-700 ease-in-out relative overflow-hidden"
       onMouseMove={handleMouseMove}
       style={{
-        transition: "background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
-        paddingBottom: !isPremium ? "60px" : "0", 
+        transition:
+          "background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+        paddingBottom: !isPremium ? "60px" : "0",
       }}
     >
       {/* Sidebar */}
@@ -171,7 +175,8 @@ export default function HomePage() {
             : "opacity-100 transform translate-y-0 scale-100"
         }`}
         style={{
-          transition: "opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1s cubic-bezier(0.4, 0, 0.2, 1)",
+          transition:
+            "opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       >
         <div className="flex items-center justify-between p-6">
@@ -209,16 +214,33 @@ export default function HomePage() {
                   transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                 }}
               >
-              {isFullscreen ? (
-		<>
-		{/*Simple. Clean. Effective. */}
-                  <Minimize2 className="h-5 w-5 transition-transform duration-300" />
-		</>
+                {isFullscreen ? (
+                  <>
+                    {/*Simple. Clean. Effective. */}
+                    <Minimize2 className="h-5 w-5 transition-transform duration-300" />
+                  </>
                 ) : (
                   <Maximize2 className="h-5 w-5 transition-transform duration-300" />
                 )}
               </Button>
             )}
+
+            {/* --- MODIFIED: Buy Me A Coffee Button --- */}
+            <a
+              href="https://www.buymeacoffee.com/your-username" // IMPORTANT: Replace with your actual link
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Buy Me A Coffee"
+            >
+              <Button
+                variant="outline"
+                className="h-9 px-3 rounded-full border-amber-500/40 bg-amber-50 text-amber-800 hover:bg-amber-100 hover:border-amber-500/60 dark:bg-amber-900/50 dark:text-amber-300 dark:border-amber-700/60 dark:hover:bg-amber-900/80 transition-all duration-300 hover:-translate-y-0.5"
+              >
+                <Coffee className="h-4 w-4" />
+                <span className="ml-2 text-sm font-medium">Buy Coffee</span>
+              </Button>
+            </a>
+            
             <Button
               variant="ghost"
               size="icon"
@@ -277,7 +299,8 @@ export default function HomePage() {
             <div
               className="mt-16 pt-8 border-t border-border/30 transition-all duration-500"
               style={{
-                transition: "border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+                transition:
+                  "border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
               }}
             >
               <form onSubmit={handleCustomSubmit} className="space-y-6">
@@ -318,7 +341,8 @@ export default function HomePage() {
             <h1
               className="text-5xl md:text-7xl lg:text-9xl font-black font-sans leading-tight tracking-tight px-4 transition-all duration-700 hover:scale-105"
               style={{
-                transition: "transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), font-size 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+                transition:
+                  "transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), font-size 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
               }}
             >
               {selectedStatus}
@@ -327,7 +351,9 @@ export default function HomePage() {
               variant="ghost"
               onClick={clearStatus}
               className={`mt-12 text-muted-foreground hover:text-foreground transition-all duration-500 hover:scale-110 ${
-                showControls ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-4"
+                showControls
+                  ? "opacity-100 transform translate-y-0"
+                  : "opacity-0 transform translate-y-4"
               }`}
               style={{
                 transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -343,7 +369,11 @@ export default function HomePage() {
       {!isPremium && <AdBanner onUpgrade={() => setShowPremiumModal(true)} />}
 
       {/* Premium Upgrade Modal */}
-      <PremiumModal isOpen={showPremiumModal} onClose={() => setShowPremiumModal(false)} onUpgrade={handleUpgrade} />
+      <PremiumModal
+        isOpen={showPremiumModal}
+        onClose={() => setShowPremiumModal(false)}
+        onUpgrade={handleUpgrade}
+      />
     </div>
   )
 }
