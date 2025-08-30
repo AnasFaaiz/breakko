@@ -1,7 +1,8 @@
 "use client"
 
 import type React from "react"
-
+import { Share2 } from "lucide-react";
+import html2canvas from "html2canvas";
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -62,6 +63,42 @@ export default function HomePage() {
       }, 3000)
       setHideTimeout(timeout)
     }, 150)
+  }
+
+  const handleShare = async () => {
+    const elementToCapture = document.getElementById("status-capture")
+    if (!elementToCapture) return 
+    
+    const canvas = await html2canvas(elementToCapture, {
+	backgroundColor: theme === "dark" ? "#0a0a0a" : "#ffffff",
+	scale: 2,
+    })
+
+    canvas.toBlob(async (blob) => {
+	if(!blob) return
+
+	const file = new File([blob], "breakko-status.png", { type: "image/png" })
+	const shareData = {
+	  files: [file],
+	  title: "My Breakko Status",
+	  text: `My current Status: ${selectedStatus}`,
+	}
+	if (navigator.share && navigator.canShaer(shareData)) {
+	  try {
+		await navigator.share(shareData)
+		await trackAnalytics("status_share_api")
+	  } catch (error) {
+		console.error("Error sharing:", error)
+	  }
+	} else {
+	   const link = document.createElement("a")
+	   link.href = URL.createObjectURL(blob)
+	   link.download = "breakko-status.png"
+	   link.click()
+	   URL.revokeObjectURL(link.href)
+	   await trackAnalytics("status_downloaded")
+	}
+    }, "image/png")
   }
 
   const handleCustomSubmit = async (e: React.FormEvent) => {
@@ -329,6 +366,7 @@ export default function HomePage() {
           </div>
         ) : (
           <div
+	    id="status-capture"
             className={`text-center transition-all duration-1000 ease-out ${
               isTransitioning
                 ? "opacity-0 scale-90 transform translate-y-8"
@@ -347,6 +385,7 @@ export default function HomePage() {
             >
               {selectedStatus}
             </h1>
+	    <div className="flex items-center justify-center gap-4 mt-12">
             <Button
               variant="ghost"
               onClick={clearStatus}
@@ -361,7 +400,15 @@ export default function HomePage() {
             >
               Change Status
             </Button>
+	    <Button variant="ghost" onClick={handleShare} className={`text-muted-foreground hover:text-foreground transition-all duration-500 hover:scale-110 ${showControls ? "opacity-100 transform translate-y-0" : "opacity-0 transform translate-y-4"}`}
+	      style={{
+	         transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+	      }}
+	    >
+	      <Share2 className="h-5 w-5" />
+	    </Button>
           </div>
+	  </div>
         )}
       </div>
 

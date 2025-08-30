@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import Link from 'next/link';
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { X } from "lucide-react"
@@ -88,6 +88,15 @@ export function Sidebar({
               </button>
             ))}
           </div>
+
+	  <div>
+  	    <Link href="/login">
+    		<Button variant="ghost" className="w-full">Login</Button>
+  	    </Link>
+  	    <Link href="/register">
+    		<Button variant="default" className="w-full mt-2">Register</Button>
+  	    </Link>
+	  </div>
 
           {/* Custom Status */}
           <div className="mt-auto">

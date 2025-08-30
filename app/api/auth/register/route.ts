@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { createUser, getUserByEmail } from "@/lib/auth"
+import { createUser, getUserByEmail, generateToken } from "@/lib/auth"
 import { z } from "zod"
 
 const registerSchema = z.object({
@@ -20,16 +20,25 @@ export async function POST(request: NextRequest) {
 
     // Create new user
     const user = await createUser(email, password)
+    const token = generateToken(user.id)
 
     return NextResponse.json({
-      message: "User created successfully",
+      message: "User created and logged in successfully",
       user: {
         id: user.id,
         email: user.email,
         is_premium: user.is_premium,
-        created_at: user.created_at,
       },
     })
+
+    response.cookies.set("auth-token", token, {
+      httpOnly: true,
+      secure: process.enc.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60,
+      path: "/",
+    })
+    return response
   } catch (error) {
     console.error("Registration error:", error)
 
