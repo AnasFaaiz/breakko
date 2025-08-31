@@ -52,7 +52,9 @@ interface AuthState {
 
   const checkAuthStatus = async () => {
     try {
-      const response = await fetch("/api/auth/me")
+      const response = await fetch("/api/auth/me", {
+	credrentials: 'include'
+      })
 
       if (response.ok) {
         const data = await response.json()
