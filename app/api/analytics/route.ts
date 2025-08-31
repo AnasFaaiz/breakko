@@ -11,18 +11,14 @@ const analyticsSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { event_type, session_id } = analyticsSchema.parse(body)
+    const { event_type, session_id } = analyticsSchema.parse(body);
+
+    const safeSessionId = session_id || null;
 
     // Get user ID from token if available (optional for analytics)
-    const token = request.cookies.get("auth-token")?.value
-    let userId = null
-
-    if (token) {
-      const decoded = verifyToken(token)
-      if (decoded) {
-        userId = decoded.userId
-      }
-    }
+    const token = request.cookies.get("auth-token")?.value;
+    const decodedToken = token ? await verifyToken(token) : null;
+    let userId = decodedToken?.userId || null;
 
     // Get client IP and user agent
     const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown"
@@ -31,7 +27,7 @@ export async function POST(request: NextRequest) {
     // Save analytics event
     await executeQuery(
       "INSERT INTO site_analytics (event_type, user_id, session_id, ip_address, user_agent) VALUES (?, ?, ?, ?, ?)",
-      [event_type, userId, session_id, ip, userAgent],
+      [event_type, userId, safeSessionId, ip, userAgent],
     )
 
     return NextResponse.json({
@@ -57,9 +53,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 })
     }
 
-    const decoded = verifyToken(token)
+    const decoded = await verifyToken(token)
     if (!decoded) {
       return NextResponse.json({ error: "Invalid or expired token" }, { status: 401 })
+    }
+    const user = await getUserById(decoded.userId);
+
+    if (!user || !user.is_admin) {
+	return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url)

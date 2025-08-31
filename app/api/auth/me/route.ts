@@ -3,13 +3,13 @@ import { verifyToken, getUserById } from "@/lib/auth"
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get("auth-token")?.value
+    const token = request.cookies.get("auth-token")?.value;
 
     if (!token) {
       return NextResponse.json({ error: "No authentication token provided" }, { status: 401 })
     }
 
-    const decoded = verifyToken(token)
+    const decoded = await verifyToken(token);
     if (!decoded) {
       return NextResponse.json({ error: "Invalid or expired token" }, { status: 401 })
     }
