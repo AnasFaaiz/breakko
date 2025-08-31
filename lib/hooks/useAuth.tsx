@@ -206,15 +206,18 @@ interface AuthState {
 
   const trackAnalytics = async (eventType: string, sessionId?: string) => {
     try {
+
+      const body = {
+	event_type: eventType,
+	session_id: sessionId,
+      };
+
       await fetch("/api/analytics", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          event_type: eventType,
-          session_id: sessionId,
-        }),
+	body: JSON.stringify(body || {}),
       })
     } catch (error) {
       console.error("Analytics tracking error:", error)
