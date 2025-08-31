@@ -4,6 +4,7 @@ import { Montserrat } from "next/font/google"
 import { Open_Sans } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { AuthProvider } from "@/lib/hooks/useAuth";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -116,7 +117,9 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange={false}>
-          {children}
+	  <AuthProvider>
+          	{children}
+	  </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
