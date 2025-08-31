@@ -84,6 +84,10 @@ const config = {
     hoverOnlyWhenSupported: true,
   },
   plugins: [require("tailwindcss-animate")],
+
+  corePlugins: {
+    cssPropertyFallbacks: false,
+  },
 } satisfies Config
 
 export default config

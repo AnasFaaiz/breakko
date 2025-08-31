@@ -24,7 +24,6 @@ export default function LoginPage() {
     if (result.success) {
       router.push("/") // Redirect to the main page on successful login
     }
-    // If login fails, the 'error' state from the useAuth hook will be updated
   }
 
   return (

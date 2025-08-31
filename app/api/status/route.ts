@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 })
     }
 
-    const decoded = verifyToken(token)
+    const decoded = await verifyToken(token)
     if (!decoded) {
       return NextResponse.json({ error: "Invalid or expired token" }, { status: 401 })
     }
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     const { status_text, is_custom } = statusSchema.parse(body)
 
     // Save status to database
-    const result = await executeQuery("INSERT INTO user_statuses (user_id, status_text, is_custom) VALUES (?, ?, ?)", [
+    const result = await executeQuery("INSERT INTO statuses (user_id, status_text, is_custom) VALUES (?, ?, ?)", [
       decoded.userId,
       status_text,
       is_custom,
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
 
     // Get user's status history
     const statuses = await executeQuery(
-      "SELECT id, status_text, is_custom, created_at FROM user_statuses WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?",
+      "SELECT id, status_text, is_custom, created_at FROM statuses WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?",
       [decoded.userId, limit, offset],
     )
 

@@ -4,7 +4,7 @@ import { executeQuery } from "@/lib/database"
 import { z } from "zod"
 
 const analyticsSchema = z.object({
-  event_type: z.enum(["page_view", "status_set", "theme_change", "fullscreen_toggle"]),
+  event_type: z.enum(["page_view", "status_set", "theme_change", "fullscreen_toggle", "status_shared_api", "status_downloaded"]),
   session_id: z.string().optional(),
 })
 
