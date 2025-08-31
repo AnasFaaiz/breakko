@@ -3,11 +3,14 @@ import bcrypt from "bcryptjs"
 import { query } from "./database"
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key"
+if(!JWT_SECRET) {
+  throw new Error("FATAL ERROR: JWT_SECRET environment variable is not defined.")
+}
 
 export interface User {
   id: number
   email: string
-  password: string
+  password_hash: string
   is_premium: boolean
   premium_expires_at: Date | null
   created_at: Date
@@ -36,9 +39,10 @@ export async function comparePassword(password: string, hashedPassword: string):
 }
 
 export async function createUser(email: string, password: string): Promise<User> {
-  const hashedPassword = await hashPassword(password)
+  const hashedPassword = await hashPassword(password);
 
-  const result = await query("INSERT INTO users (email, password) VALUES (?, ?)", [email, hashedPassword])
+  const sql = 'INSERT INTO users (email, password_hash) VALUES (?, ?)';
+  const result = await query(sql, [email, hashedPassword]);
 
   const userId = (result as any).insertId
   return getUserById(userId)
@@ -63,7 +67,7 @@ export async function authenticateUser(email: string, password: string): Promise
     return null
   }
 
-  const isValidPassword = await comparePassword(password, user.password)
+  const isValidPassword = await comparePassword(password, user.password_hash)
   if (!isValidPassword) {
     return null
   }

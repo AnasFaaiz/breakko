@@ -1,6 +1,29 @@
 "use client"
+import { useState, useEffect, createContext, useContext, ReactNode } from "react"
 
-import { useState, useEffect } from "react"
+interface AuthContextType extends AuthState {
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
+  register: (email:string, password:string) => Promise<{ success: boolean; error?: string }>
+  logout: () => Promise<void>
+  saveStatus: (statusText: string, isCustom?: boolean) => Promise<{ success: boolean; error?: string; statusId?: number }>
+  trackAnalytics: (eventType: string, sessionId?: string) => Promise<void>
+  refreshAuth: () => Promise<void>
+}
+
+ const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const auth = useAuthHook();
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>
+}
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
 
 interface User {
   id: number
@@ -16,7 +39,7 @@ interface AuthState {
   error: string | null
 }
 
-export function useAuth() {
+ function useAuthHook() {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     loading: true,
@@ -109,8 +132,12 @@ export function useAuth() {
       const data = await response.json()
 
       if (response.ok) {
-        // After successful registration, log the user in
-        return await login(email, password)
+	setAuthState({
+	  user: data.user,
+	  loading: false,
+	  error: null,
+	})
+	return { success: true }
       } else {
         setAuthState((prev) => ({
           ...prev,
