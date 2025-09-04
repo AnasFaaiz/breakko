@@ -264,7 +264,7 @@ export default function HomePage() {
 
             {/* --- MODIFIED: Buy Me A Coffee Button --- */}
             <a
-              href="https://www.buymeacoffee.com/your-username" // IMPORTANT: Replace with your actual link
+              href="https://www.buymeacoffee.com/breakko262e" // IMPORTANT: Replace with your actual link
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Buy Me A Coffee"
