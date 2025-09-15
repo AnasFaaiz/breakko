@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -9,37 +10,39 @@ import { Check, Coffee, Crown } from "lucide-react"
 interface PremiumModalProps {
   isOpen: boolean
   onClose: () => void
-  onUpgrade: () => void
+  // onUpgrade: () => void
 }
 
 export function PremiumModal({ isOpen, onClose, onUpgrade }: PremiumModalProps) {
-  const [isLoading, setIsLoading] = useState(false)
-
-  const handleUpgrade = async () => {
-    setIsLoading(true)
-    try {
-      await onUpgrade()
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  // const [isLoading, setIsLoading] = useState(false)
+  const bmcMembershipLink = "https://buymeacoffee.com/breakko262e/membership"
+  // const handleUpgrade = async () => {
+  //   setIsLoading(true)
+  //   try {
+  //     await onUpgrade()
+  //   } finally {
+  //     setIsLoading(false)
+  //   }
+  // }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Crown className="h-5 w-5 text-primary" />
+        <DialogHeader className="text-center">
+          <DialogTitle className="flex items-center justify-center gap-2 text-2xl font-bold">
+            <Crown className="h-6 w-6 text-primary" />
             Upgrade to Premium
           </DialogTitle>
-          <DialogDescription>Remove ads and support Breakko development</DialogDescription>
+          <DialogDescription>
+            Remove ads and support Breakko by becoming a member.
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-6 pt-4">
           {/* Premium Features */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Premium Benefits</CardTitle>
+              <CardTitle className="text-base">Your Membership Includes:</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center gap-3">
@@ -48,11 +51,7 @@ export function PremiumModal({ isOpen, onClose, onUpgrade }: PremiumModalProps) 
               </div>
               <div className="flex items-center gap-3">
                 <Check className="h-4 w-4 text-green-500" />
-                <span className="text-sm">Support development</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Check className="h-4 w-4 text-green-500" />
-                <span className="text-sm">Priority support</span>
+                <span className="text-sm">Directly support development</span>
               </div>
               <div className="flex items-center gap-3">
                 <Check className="h-4 w-4 text-green-500" />
@@ -62,43 +61,24 @@ export function PremiumModal({ isOpen, onClose, onUpgrade }: PremiumModalProps) 
           </Card>
 
           {/* Pricing */}
-          <div className="text-center space-y-4">
+          <div className="text-center">
             <div className="text-3xl font-bold">
               $2<span className="text-lg font-normal text-muted-foreground">/month</span>
             </div>
-            <p className="text-sm text-muted-foreground">Cancel anytime. No long-term commitment.</p>
+            <p className="text-sm text-muted-foreground">via Buy Me a Coffee</p>
           </div>
 
-          {/* Action Buttons */}
-          <div className="space-y-3">
-            <Button
-              onClick={handleUpgrade}
-              disabled={isLoading}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-            >
-              {isLoading ? "Processing..." : "Upgrade to Premium"}
-            </Button>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">or</span>
-              </div>
-            </div>
-
-            <Button
-              variant="outline"
-              onClick={() => window.open("https://buymeacoffee.com/breakko", "_blank")}
-              className="w-full"
-            >
-              <Coffee className="h-4 w-4 mr-2" />
-              Buy Me a Coffee
-            </Button>
+          {/* --- THIS IS THE MAIN CHANGE --- */}
+          {/* The entire footer is replaced with a single, clear link */}
+          <div className="pt-4">
+            <Link href={bmcMembershipLink} target="_blank" rel="noopener noreferrer" className="w-full">
+              <Button className="w-full">
+                Become a Member
+              </Button>
+            </Link>
           </div>
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

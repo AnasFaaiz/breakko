@@ -7,14 +7,20 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 })
 
 export async function POST(request: NextRequest) {
-  try {
+   const stripeKey = process.env.STRIPE_SECRET_KEY;
+
+   try {
     const token = request.cookies.get("auth-token")?.value
+    if(!stripeKey){
+	console.error("Stripe secret key is not configured");
+	return NextResponse.json({ error: "Payment service is not configured."}, {status: 500});
+    }
 
     if (!token) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 })
     }
 
-    const decoded = verifyToken(token)
+    const decoded = await verifyToken(token)
     if (!decoded) {
       return NextResponse.json({ error: "Invalid or expired token" }, { status: 401 })
     }

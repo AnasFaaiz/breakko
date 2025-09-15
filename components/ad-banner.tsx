@@ -2,14 +2,29 @@
 
 import { useState } from "react"
 import { X } from "lucide-react"
+import Link from "next/link";
 import { Button } from "@/components/ui/button"
+import {useAuth} from "@/lib/hooks/useAuth";
+import {useRouter} from "next/navigation";
 
 interface AdBannerProps {
   onUpgrade?: () => void
 }
 
 export function AdBanner({ onUpgrade }: AdBannerProps) {
-  const [isVisible, setIsVisible] = useState(true)
+  const [isVisible, setIsVisible] = useState(true);
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  const handleUpgradeClick = () => {
+      if(user){
+	if(onUpgrade){
+	  onUpgrade();
+	}
+      }else{
+	router.push("/login");
+      }
+  };
 
   if (!isVisible) return null
 
@@ -24,14 +39,16 @@ export function AdBanner({ onUpgrade }: AdBannerProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button
+	   <Button
             variant="outline"
             size="sm"
-            onClick={onUpgrade}
+	    disabled={loading}
+            onClick={handleUpgradeClick}
             className="text-xs hover:bg-primary hover:text-primary-foreground transition-colors duration-200 bg-transparent"
           >
-            Remove Ads - $2/month
+	    {user ? "Remove Ads - $2/month" : "Login to Remove Ads"}
           </Button>
+	  
 	  {/*<Button
             variant="ghost"
             size="icon"
