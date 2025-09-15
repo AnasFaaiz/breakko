@@ -13,7 +13,7 @@ interface PremiumModalProps {
   // onUpgrade: () => void
 }
 
-export function PremiumModal({ isOpen, onClose, onUpgrade }: PremiumModalProps) {
+export function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
   // const [isLoading, setIsLoading] = useState(false)
   const bmcMembershipLink = "https://buymeacoffee.com/breakko262e/membership"
   // const handleUpgrade = async () => {
