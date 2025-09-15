@@ -19,26 +19,27 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new user
-    const user = await createUser(email, password)
-    const token = generateToken(user.id)
+    const user = await createUser(email, password);
+    const token = await generateToken(user.id);
 
-    return NextResponse.json({
+    const response =  NextResponse.json({
       message: "User created and logged in successfully",
       user: {
         id: user.id,
         email: user.email,
         is_premium: user.is_premium,
       },
-    })
+    });
 
     response.cookies.set("auth-token", token, {
       httpOnly: true,
-      secure: process.enc.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60,
       path: "/",
     })
-    return response
+    return response;
+
   } catch (error) {
     console.error("Registration error:", error)
 

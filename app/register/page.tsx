@@ -8,12 +8,13 @@ import { useAuth } from "@/lib/hooks/useAuth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Label } from "@/components/ui/label";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
-  const { register } = useAuth()
+  const { register, loading } = useAuth()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -53,6 +54,7 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+		disabled={loading}
               />
             </div>
             <div className="space-y-2">
@@ -64,6 +66,7 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+		disabled={loading}
               />
             </div>
             {error && <p className="text-sm text-red-500">{error}</p>}
@@ -72,6 +75,14 @@ export default function RegisterPage() {
             </Button>
           </form>
         </CardContent>
+	<CardFooter className="text-center text-sm">
+          <p>
+            Already have an account?{" "}
+            <Link href="/login" className="font-semibold text-primary hover:underline">
+              Login
+            </Link>
+          </p>
+        </CardFooter>
       </Card>
     </div>
   )

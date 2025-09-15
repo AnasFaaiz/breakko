@@ -33,6 +33,7 @@ export default function HomePage() {
   const [mounted, setMounted] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const { user, saveStatus, trackAnalytics } = useAuth()
+  const [isSharing, setIsSharing] = useState(false);
 
   useEffect(() => {
     setMounted(true)
@@ -67,39 +68,50 @@ export default function HomePage() {
 
   const handleShare = async () => {
     const elementToCapture = document.getElementById("status-capture")
-    if (!elementToCapture) return 
+    if (!elementToCapture) return; 
     
-    const canvas = await html2canvas(elementToCapture, {
-	backgroundColor: theme === "dark" ? "#0a0a0a" : "#ffffff",
-	scale: 2,
-    })
+    setIsSharing(true);
 
-    canvas.toBlob(async (blob) => {
-	if(!blob) return
+    try{
+    	const canvas = await html2canvas(elementToCapture, {
+	   backgroundColor: theme === "dark" ? "#0a0a0a" : "#ffffff",
+	   scale: 2,
+    	});
 
-	const file = new File([blob], "breakko-status.png", { type: "image/png" })
-	const shareData = {
-	  files: [file],
-	  title: "My Breakko Status",
-	  text: `My current Status: ${selectedStatus}`,
-	}
-	if (navigator.share && navigator.canShaer(shareData)) {
-	  try {
-		await navigator.share(shareData)
-		await trackAnalytics("status_share_api")
-	  } catch (error) {
-		console.error("Error sharing:", error)
-	  }
-	} else {
-	   const link = document.createElement("a")
-	   link.href = URL.createObjectURL(blob)
-	   link.download = "breakko-status.png"
-	   link.click()
-	   URL.revokeObjectURL(link.href)
-	   await trackAnalytics("status_downloaded")
-	}
-    }, "image/png")
-  }
+    	canvas.toBlob(async (blob) => {
+		if(!blob){
+		   setIsSharing(false);
+		   return;
+		}
+
+		const file = new File([blob], "breakko-status.png", { type: "image/png" })
+		const shareData = {
+	  	   files: [file],
+	  	   title: "My Breakko Status",
+	  	   text: `My current Status: ${selectedStatus}`,
+		};
+	     if (navigator.share && navigator.canShare(shareData)) {
+	  	try {
+		   await navigator.share(shareData)
+		   await trackAnalytics("status_share_api")
+	  	} catch (error) {
+		   console.error("Error sharing:", error)
+	  	}
+	     } else {
+	   	const link = document.createElement("a")
+	   	link.href = URL.createObjectURL(blob)
+	   	link.download = "breakko-status.png"
+	   	link.click()
+	   	URL.revokeObjectURL(link.href)
+	   	await trackAnalytics("status_downloaded")
+	     }
+    	}, "image/png")
+    } catch (error){
+	console.error("Error generating canvas:", error);
+    } finally {
+	setIsSharing(false);
+    }
+  };
 
   const handleCustomSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -405,7 +417,11 @@ export default function HomePage() {
 	         transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
 	      }}
 	    >
-	      <Share2 className="h-5 w-5" />
+	      {isSharing ? (
+	      	<Loader2 className="h-5 w-5 animate-spin" />
+	      ): (
+	      	<Share2 className="h-5 w-5" />
+	      )}
 	    </Button>
           </div>
 	  </div>

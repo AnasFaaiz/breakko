@@ -2,10 +2,14 @@ import mysql from "mysql2/promise"
 
 // Database connection configuration
 const dbConfig = {
-  host: process.env.DB_HOST || "localhost",
-  user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "",
-  database: process.env.DB_DATABASE || "breakko_db",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  port: Number(process.env.DB_PORT),
+  ssl: {
+    rejectUnauthorized: true,
+  },
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -24,15 +28,6 @@ export async function query(sql: string, params: any[] = []): Promise<any> {
   }
 }
 
-export async function executeQuery(sql: string, params: any[] = []): Promise<any> {
-  try {
-    const [results] = await pool.execute(sql, params)
-    return results
-  } catch (error) {
-    console.error("Database execute query error:", error)
-    throw error
-  }
-}
 
 // Helper function to close the pool (useful for cleanup)
 export async function closePool(): Promise<void> {
