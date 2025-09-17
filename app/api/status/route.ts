@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { verifyToken } from "@/lib/auth"
-import { executeQuery } from "@/lib/database"
+import { query } from "@/lib/database"
 import { z } from "zod"
 
 const statusSchema = z.object({
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     const { status_text, is_custom } = statusSchema.parse(body)
 
     // Save status to database
-    const result = await executeQuery("INSERT INTO statuses (user_id, status_text, is_custom) VALUES (?, ?, ?)", [
+    const result = await query("INSERT INTO statuses (user_id, status_text, is_custom) VALUES ($1, $2, $3)", [
       decoded.userId,
       status_text,
       is_custom,
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
     const offset = Number.parseInt(searchParams.get("offset") || "0")
 
     // Get user's status history
-    const statuses = await executeQuery(
+    const statuses = await query(
       "SELECT id, status_text, is_custom, created_at FROM statuses WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?",
       [decoded.userId, limit, offset],
     )
