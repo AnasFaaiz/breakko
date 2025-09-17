@@ -2,13 +2,13 @@ import { Pool } from 'pg';
 import fs from 'fs';
 import path from 'path';
 
-const caPath = process.env.SUPABASE_CA_CERT_PATH || path.join(process.cwd(), 'prod-ca-2021.crt');
+// const caPath = process.env.SUPABASE_CA_CERT_PATH || path.join(process.cwd(), 'prod-ca-2021.crt');
 
 
 const pool = new Pool({
   connectionString: process.env.POSTGRES_URL,
   ssl: {
-    ca: fs.readFileSync(caPath).toString(),
+    ca: process.env.SUPABASE_CA_CERT,
   },
 });
 
