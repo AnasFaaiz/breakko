@@ -1,3 +1,4 @@
+export const runtime = "nodejs";
 import { type NextRequest, NextResponse } from "next/server"
 import { createUser, getUserByEmail, generateToken } from "@/lib/auth"
 import { z } from "zod"

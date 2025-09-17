@@ -41,20 +41,21 @@ export async function comparePassword(password: string, hashedPassword: string):
 export async function createUser(email: string, password: string): Promise<User> {
   const hashedPassword = await hashPassword(password);
 
-  const sql = 'INSERT INTO users (email, password_hash) VALUES (?, ?)';
-  const result = await query(sql, [email, hashedPassword]);
-
-  const userId = (result as any).insertId
-  return getUserById(userId)
+  // CHANGED: Use $1, $2 and RETURNING *
+  const sql = 'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING *';
+  const users = await query(sql, [email, hashedPassword]);
+  return users[0]; // Return the newly created user
 }
 
 export async function getUserByEmail(email: string): Promise<User | null> {
-  const users = (await query("SELECT * FROM users WHERE email = ?", [email])) as User[]
+  // CHANGED: Use $1 instead of ?
+  const users = (await query("SELECT * FROM users WHERE email = $1", [email])) as User[]
   return users.length > 0 ? users[0] : null
 }
 
 export async function getUserById(id: number): Promise<User> {
-  const users = (await query("SELECT * FROM users WHERE id = ?", [id])) as User[]
+  // CHANGED: Use $1 instead of ?
+  const users = (await query("SELECT * FROM users WHERE id = $1", [id])) as User[]
   if (users.length === 0) {
     throw new Error("User not found")
   }
@@ -76,11 +77,10 @@ export async function authenticateUser(email: string, password: string): Promise
 }
 
 export async function updateUserPremiumStatus(userId: number, isPremium: boolean, expiresAt?: Date): Promise<void> {
-  await query("UPDATE users SET is_premium = ?, premium_expires_at = ?, updated_at = NOW() WHERE id = ?", [
-    isPremium,
-    expiresAt || null,
-    userId,
-  ])
+  await query(
+    "UPDATE users SET is_premium = $1, premium_expires_at = $2, updated_at = NOW() WHERE id = $3",
+    [isPremium, expiresAt || null, userId]
+  )
 }
 
 export async function checkPremiumStatus(userId: number): Promise<boolean> {
