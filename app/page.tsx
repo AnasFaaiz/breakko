@@ -6,7 +6,7 @@ import html2canvas from "html2canvas";
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Menu, Sun, Moon, Maximize2, Minimize2, Coffee } from "lucide-react"
+import { Menu, Sun, Moon, Maximize2, Minimize2, Coffee, Loader2 } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Sidebar } from "@/components/sidebar"
 import { AdBanner } from "@/components/ad-banner"
