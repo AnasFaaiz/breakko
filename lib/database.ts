@@ -1,48 +1,40 @@
-import mysql from "mysql2/promise"
+// lib/database.ts
 
-// Database connection configuration
-const dbConfig = {
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  port: Number(process.env.DB_PORT),
-  ssl: {
-    rejectUnauthorized: true,
-  },
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
+import { Pool } from 'pg';
+
+let pool: Pool;
+
+if (!pool) {
+  pool = new Pool({
+    connectionString: process.env.POSTGRES_URL, 
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  });
 }
-
-// Create connection pool
-const pool = mysql.createPool(dbConfig)
 
 export async function query(sql: string, params: any[] = []): Promise<any> {
   try {
-    const [results] = await pool.execute(sql, params)
-    return results
+    const results = await pool.query(sql, params);
+    return results.rows; // IMPORTANT: The 'pg' driver returns results in a 'rows' property
   } catch (error) {
-    console.error("Database query error:", error)
-    throw error
+    console.error("Database query error:", error);
+    throw error;
   }
 }
 
-
-// Helper function to close the pool (useful for cleanup)
-export async function closePool(): Promise<void> {
-  await pool.end()
-}
-
-// Test database connection
 export async function testConnection(): Promise<boolean> {
   try {
-    const connection = await pool.getConnection()
-    await connection.ping()
-    connection.release()
-    return true
+    const client = await pool.connect();
+    await client.query('SELECT NOW()'); // A simple query to test the connection
+    client.release();
+    return true;
   } catch (error) {
-    console.error("Database connection test failed:", error)
-    return false
+    console.error("Database connection test failed:", error);
+    return false;
   }
+}
+
+export async function closePool(): Promise<void> {
+  await pool.end();
 }
