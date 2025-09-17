@@ -1,7 +1,10 @@
+export const runtime = "nodejs";
 import { type NextRequest, NextResponse } from "next/server"
 import { verifyToken } from "@/lib/auth"
-import { executeQuery } from "@/lib/database"
+import { query } from "@/lib/database"
 import { z } from "zod"
+
+
 
 const analyticsSchema = z.object({
   event_type: z.enum(["page_view", "status_set", "theme_change", "fullscreen_toggle", "status_shared_api", "status_downloaded"]),
@@ -25,8 +28,8 @@ export async function POST(request: NextRequest) {
     const userAgent = request.headers.get("user-agent") || "unknown"
 
     // Save analytics event
-    await executeQuery(
-      "INSERT INTO site_analytics (event_type, user_id, session_id, ip_address, user_agent) VALUES (?, ?, ?, ?, ?)",
+    await query(
+      "INSERT INTO site_analytics (event_type, user_id, session_id, ip_address, user_agent) VALUES ($1, $2, $3, $4, $5)",
       [event_type, userId, safeSessionId, ip, userAgent],
     )
 
@@ -67,7 +70,7 @@ export async function GET(request: NextRequest) {
     const days = Number.parseInt(searchParams.get("days") || "7")
 
     // Get analytics data for the last N days
-    const analytics = await executeQuery(
+    const analytics = await query(
       `SELECT 
         event_type,
         DATE(created_at) as date,

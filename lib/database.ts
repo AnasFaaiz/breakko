@@ -1,22 +1,21 @@
-// lib/database.ts
-
 import { Pool } from 'pg';
+import fs from 'fs';
+import path from 'path';
 
-let pool: Pool;
+const caPath = process.env.SUPABASE_CA_CERT_PATH || path.join(process.cwd(), 'prod-ca-2021.crt');
 
-if (!pool) {
-  pool = new Pool({
-    connectionString: process.env.POSTGRES_URL, 
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  });
-}
 
-export async function query(sql: string, params: any[] = []): Promise<any> {
+const pool = new Pool({
+  connectionString: process.env.POSTGRES_URL,
+  ssl: {
+    ca: fs.readFileSync(caPath).toString(),
+  },
+});
+
+export async function query(sql: string, params: any[] = []) {
   try {
     const results = await pool.query(sql, params);
-    return results.rows; // IMPORTANT: The 'pg' driver returns results in a 'rows' property
+    return results.rows;
   } catch (error) {
     console.error("Database query error:", error);
     throw error;
@@ -26,7 +25,7 @@ export async function query(sql: string, params: any[] = []): Promise<any> {
 export async function testConnection(): Promise<boolean> {
   try {
     const client = await pool.connect();
-    await client.query('SELECT NOW()'); // A simple query to test the connection
+    await client.query('SELECT NOW()');
     client.release();
     return true;
   } catch (error) {

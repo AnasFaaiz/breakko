@@ -1,5 +1,7 @@
+export const runtime = "nodejs";
 import { type NextRequest, NextResponse } from "next/server"
 import { verifyToken, getUserById } from "@/lib/auth"
+
 
 export async function GET(request: NextRequest) {
   try {

@@ -1,3 +1,4 @@
+export const runtime = "nodejs";
 import { type NextRequest, NextResponse } from "next/server"
 import { authenticateUser, generateToken } from "@/lib/auth"
 import { z } from "zod"
@@ -19,7 +20,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate JWT token
-    const token = generateToken(user.id)
+    const token = await generateToken(user.id)
 
     // Create response with token in httpOnly cookie
     const response = NextResponse.json({
